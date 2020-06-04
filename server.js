@@ -2,10 +2,13 @@
 const express = require('express')
 //handlebars
 var exphbs = require('express-handlebars')
-
 // intialize express as app
 const app = express()
-
+// INITIALIZE BODY-PARSER AND ADD IT TO APP
+const bodyParser = require('body-parser');
+const models = require('./db/models');
+// The following line must appear AFTER const app = express() and before your routes!
+app.use(bodyParser.urlencoded({ extended: true }));
 app.engine('handlebars', exphbs({ defaultLayout: 'main'}))
 app.set('view engine', 'handlebars')
 
@@ -18,7 +21,19 @@ var events = [
 
 // root get request
 app.get('/', (req, res) => {
-  res.render('events-index', { events: events });
+  models.Event.findAll({ order: [['createdAt', 'DESC']] }).then(events => {
+    res.render('events-index', { events: events });
+  })
+})
+
+
+// CREATE
+app.post('/events', (req, res) => {
+  models.Event.create(req.body).then(event => {
+    res.redirect(`/`);
+  }).catch((err) => {
+    console.log(err)
+  });
 })
 // port
 const port = process.env.PORT || 8000;
