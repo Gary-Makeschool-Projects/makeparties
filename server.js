@@ -35,10 +35,16 @@ app.engine('handlebars', hbs.engine);
 // Use handlebars to render
 app.set('view engine', 'handlebars');
 
-app.use(bodyParser.urlencoded({ extended: true }));
-
 // override with POST having ?_method=DELETE or ?_method=PUT
 app.use(methodOverride('_method'))
+
+// app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false })); 
+
+// controllers 
+require('./controllers/event')(app, models);
+require('./controllers/rsvps')(app, models);
 
 // Index
 app.get('/', (req, res) => {
@@ -48,9 +54,9 @@ app.get('/', (req, res) => {
 })
 
 // NEW
-app.get('/events/new', (req, res) => {
-  res.render('events-new', {});
-})
+// app.get('/events/new', (req, res) => {
+//   res.render('events-new', {});
+// })
   
 // Choose a port to listen on
 const port = process.env.PORT || 3000;
